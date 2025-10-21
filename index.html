@@ -887,7 +887,7 @@
                 <div class="subcategories" id="subcategories"></div>
             </div>
 
-            <div class="categories" id="stage-tabs-container" style="display: none; margin-bottom: -20px; justify-content: flex-start; padding-left: 20px;">
+            <div class="categories" id="stage-tabs-container" style="display: none; margin-bottom: -20px;">
                 </div>
             <div class="documents-container" id="documents-container" style="display: none;">
                 <div class="section-header">
@@ -1359,7 +1359,7 @@
         const mainCategories = document.getElementById('main-categories');
         const subcategoriesContainer = document.getElementById('subcategories-container');
         const subcategories = document.getElementById('subcategories');
-        const stageTabsContainer = document.getElementById('stage-tabs-container'); // <-- NUEVA REFERENCIA
+        const stageTabsContainer = document.getElementById('stage-tabs-container');
         const documentsContainer = document.getElementById('documents-container');
         const documentsGrid = document.getElementById('documents-grid');
         const currentCategory = document.getElementById('current-category');
@@ -1433,7 +1433,7 @@
             mainCategories.style.display = 'flex';
             subcategoriesContainer.style.display = 'none';
             documentsContainer.style.display = 'none';
-            stageTabsContainer.style.display = 'none'; // <-- AÑADIDO
+            stageTabsContainer.style.display = 'none';
             mainTitle.textContent = 'Sistema de Calificaciones';
             mainSubtitle.textContent = 'Seleccione una categoría para acceder a los documentos';
             navigationHistory = [];
@@ -1445,7 +1445,7 @@
             mainCategories.style.display = 'none';
             subcategoriesContainer.style.display = 'block';
             documentsContainer.style.display = 'none';
-            stageTabsContainer.style.display = 'none'; // <-- AÑADIDO
+            stageTabsContainer.style.display = 'none';
             
             subcategoryTitle.textContent = category.title;
             mainTitle.textContent = category.title;
@@ -1514,7 +1514,6 @@
                     <p class="subcategory-description">${nestedSubcategory.description}</p>
                 `;
                 
-                // ===== INICIO: LÓGICA DE CLIC ACTUALIZADA =====
                 card.addEventListener('click', () => {
                     // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
                     if (nestedSubcategory.stages) {
@@ -1530,7 +1529,6 @@
                         addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
                     }
                 });
-                // ===== FIN: LÓGICA DE CLIC ACTUALIZADA =====
                 
                 subcategories.appendChild(card);
             }
@@ -1565,7 +1563,6 @@
                     <p class="subcategory-description">${deepNestedSubcategory.description}</p>
                 `;
                 
-                // ===== INICIO: LÓGICA DE CLIC ACTUALIZADA (para nivel 4) =====
                 card.addEventListener('click', () => {
                     // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
                     if (deepNestedSubcategory.stages) {
@@ -1581,7 +1578,6 @@
                         addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
                     }
                 });
-                // ===== FIN: LÓGICA DE CLIC ACTUALIZADA =====
                 
                 subcategories.appendChild(card);
             }
@@ -1590,16 +1586,13 @@
         }
         
         // Mostrar subcategorías muy profundamente anidadas (nivel 5)
-        // Esta función ahora solo debería llevar a documentos, ya que 'stages' la reemplazó
         function showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, deepNestedKey, deepNestedSubcategory) {
             subcategoryTitle.textContent = deepNestedSubcategory.title;
             mainTitle.textContent = deepNestedSubcategory.title;
             mainSubtitle.textContent = deepNestedSubcategory.description;
             
-            // Limpiar subcategorías anteriores
             subcategories.innerHTML = '';
             
-            // Crear tarjetas de subcategorías muy profundamente anidadas
             for (const key in deepNestedSubcategory.subcategories) {
                 const veryDeepNestedSubcategory = deepNestedSubcategory.subcategories[key];
                 const card = document.createElement('div');
@@ -1619,7 +1612,6 @@
                 `;
                 
                 card.addEventListener('click', () => {
-                    // Este es el último nivel, siempre muestra documentos
                     showDocuments(veryDeepNestedSubcategory.documents, veryDeepNestedSubcategory.title);
                     addBreadcrumb(key, veryDeepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey, deepNestedKey);
                 });
@@ -1630,7 +1622,7 @@
             navigationHistory.push({ type: 'deepNestedSubcategory', categoryKey, subcategoryKey, nestedKey, key: deepNestedKey });
         }
 
-        // ===== INICIO: NUEVA FUNCIÓN PARA PESTAÑAS (IQ/OQ/PQ) =====
+        // Función para mostrar Pestañas (IQ/OQ/PQ) y Documentos
         function showStageTabsAndDocuments(stages, title, description) {
             mainCategories.style.display = 'none';
             subcategoriesContainer.style.display = 'none';
@@ -1684,11 +1676,8 @@
                 }
             });
         }
-        // ===== FIN: NUEVA FUNCIÓN PARA PESTAÑAS =====
-
         
-        // ===== INICIO: FUNCIÓN showDocuments MODIFICADA =====
-        // Mostrar documentos
+        // Mostrar documentos (MODIFICADA)
         function showDocuments(docs, title, calledFromTab = false) {
             
             if (!calledFromTab) {
@@ -1749,14 +1738,65 @@
                 navigationHistory.push({ type: 'documents', title });
             }
         }
-        // ===== FIN: FUNCIÓN showDocuments MODIFICADA =====
         
         // ==================================================
-        // FUNCIONES DE BREADCRUMB
+        // FUNCIONES DE BREADCRUMB (CORREGIDAS)
         // ==================================================
+
+        // ===== INICIO: FUNCIÓN DE NAVEGACIÓN REFACTORIZADA (CORREGIDA) =====
+        function navigateBreadcrumb(linkElement) {
+            const ds = linkElement.dataset;
+            const key = ds.key;
+            const catKey = ds.categoryKey;
+            const subKey = ds.subcategoryKey;
+            const nestKey = ds.nestedKey;
+            
+            // Logic to show the correct view, based on *which keys are present*
+            if (catKey && subKey && nestKey) { // Level 4 (e.g., Verano under 750L/Rango15-25)
+                const cat = documentsStructure[catKey].subcategories[subKey].subcategories[nestKey].subcategories[key];
+                if (cat.stages) {
+                    showStageTabsAndDocuments(cat.stages, cat.title, cat.description);
+                } else {
+                    showDocuments(cat.documents, cat.title);
+                }
+            } else if (catKey && subKey) { // Level 3 (e.g., Invierno under 50L, or Rango15-25 under 750L)
+                const cat = documentsStructure[catKey].subcategories[subKey].subcategories[key];
+                if (cat.stages) {
+                    showStageTabsAndDocuments(cat.stages, cat.title, cat.description);
+                } else {
+                    showDeepNestedSubcategories(catKey, subKey, key, cat);
+                }
+            } else if (catKey) { // Level 2 (e.g., 50L under Contenedores)
+                const cat = documentsStructure[catKey].subcategories[key];
+                showNestedSubcategories(catKey, key, cat);
+            } else if (key) { // Level 1 (e.g., Contenedores)
+                showSubcategories(key);
+            }
+            // Home (level 0) is handled by its own 'homeLink' listener, so no 'else' needed.
+
+            // Clean up breadcrumb trail
+            const clickedIndex = Array.from(breadcrumb.children).indexOf(linkElement);
+            while (breadcrumb.children.length > clickedIndex + 1) { 
+                breadcrumb.removeChild(breadcrumb.lastChild);
+            }
+        }
+        // ===== FIN: FUNCIÓN DE NAVEGACIÓN REFACTORIZADA =====
         
-        // Añadir elemento al breadcrumb
+        // Añadir elemento al breadcrumb (CORREGIDO)
         function addBreadcrumb(key, title, categoryKey = null, subcategoryKey = null, nestedKey = null, deepNestedKey = null) {
+            
+            // --- Esta lógica previene duplicados por doble-clic ---
+            let level = 1;
+            if (categoryKey) level = 2;
+            if (subcategoryKey) level = 3;
+            if (nestedKey) level = 4;
+            if (deepNestedKey) level = 5;
+            const targetIndex = level * 2; 
+            while (breadcrumb.children.length > (targetIndex - 1) && breadcrumb.children.length > 1) {
+                 breadcrumb.removeChild(breadcrumb.lastChild);
+            }
+            // --- Fin de la corrección de duplicados ---
+
             const separator = document.createElement('span');
             separator.className = 'separator';
             separator.innerHTML = '<i class="fas fa-chevron-right"></i>';
@@ -1772,51 +1812,12 @@
             if (nestedKey) link.dataset.nestedKey = nestedKey;
             if (deepNestedKey) link.dataset.deepNestedKey = deepNestedKey;
             
+            // ===== INICIO: LISTENER CORREGIDO =====
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                
-                if (categoryKey && subcategoryKey && nestedKey && deepNestedKey) {
-                    const category = documentsStructure[categoryKey];
-                    if (category && category.subcategories[subcategoryKey]) {
-                        const subcategory = category.subcategories[subcategoryKey];
-                        if (subcategory.subcategories[nestedKey]) {
-                            const nestedSubcategory = subcategory.subcategories[nestedKey];
-                            if (nestedSubcategory.subcategories[deepNestedKey]) {
-                                const deepNestedSubcategory = nestedSubcategory.subcategories[deepNestedKey];
-                                showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, deepNestedKey, deepNestedSubcategory);
-                            }
-                        }
-                    }
-                } else if (categoryKey && subcategoryKey && nestedKey) {
-                    const category = documentsStructure[categoryKey];
-                    if (category && category.subcategories[subcategoryKey]) {
-                        const subcategory = category.subcategories[subcategoryKey];
-                        if (subcategory.subcategories[nestedKey]) {
-                            const nestedSubcategory = subcategory.subcategories[nestedKey];
-                            showDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, nestedSubcategory);
-                        }
-                    }
-                } else if (categoryKey && subcategoryKey) {
-                    const category = documentsStructure[categoryKey];
-                    if (category && category.subcategories[subcategoryKey]) {
-                        const subcategory = category.subcategories[subcategoryKey];
-                        showNestedSubcategories(categoryKey, subcategoryKey, subcategory);
-                    }
-                } else if (categoryKey) {
-                    showSubcategories(categoryKey);
-                } else {
-                    showMainCategories();
-                }
-                
-                // ===== INICIO: CORRECCIÓN DEL BUG DEL BREADCRUMB =====
-                // Limpiar breadcrumb desde este punto onward
-                const index = Array.from(breadcrumb.children).indexOf(link);
-                // Debe ser 'index + 1' para no borrar el link actual
-                while (breadcrumb.children.length > index + 1) { 
-                    breadcrumb.removeChild(breadcrumb.lastChild);
-                }
-                // ===== FIN: CORRECCIÓN DEL BUG DEL BREADCRUMB =====
+                navigateBreadcrumb(e.currentTarget); // Llamar a la nueva función de navegación
             });
+            // ===== FIN: LISTENER CORREGIDO =====
             
             breadcrumb.appendChild(separator);
             breadcrumb.appendChild(link);
