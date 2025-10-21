@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Calificaciones | Transfarma</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Calibri:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Fuentes */
+        :root {
+            --font-primary: 'Century Gothic', Calibri, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-secondary: Calibri, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Variables modo claro */
+        :root, [data-theme="light"] {
+            --primary-green: #8BC540;
+            --primary-blue: #003C88;
+            --secondary-gray: #5E5E5E;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e0e6ed;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --success: #38a169;
+            --warning: #ecc94b;
+            --danger: #e53e3e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --card-shadow: 0 6px 15px rgba(0, 60, 136, 0.1);
+            --bg-primary: linear-gradient(135deg, #f8fafc, #f0f5f9);
+            --bg-header: white;
+            --bg-card: white;
+            --card-border: var(--medium-gray);
+            --text-primary: var(--text-dark);
+            --text-secondary: var(--secondary-gray);
+            --text-muted: var(--text-light);
+            --highlight-bg: rgba(139, 197, 64, 0.1);
+            --icon-bg: rgba(0, 60, 136, 0.1);
+            --footer-bg: var(--primary-blue);
+            --footer-text: white;
+            --toggle-icon: '\f186'; /* moon */
+        }
+        
+        /* Variables modo oscuro */
+        [data-theme="dark"] {
+            --primary-green: #8BC540;
+            --primary-blue: #4d8ff2;
+            --secondary-blue: #003C88;
+            --bg-primary: #121826;
+            --bg-header: #1a2236;
+            --bg-card: #1a2236;
+            --card-border: #2a3550;
+            --text-primary: #e0e9ff;
+            --text-secondary: #8a9bb8;
+            --text-muted: #8a9bb8;
+            --success: #38a169;
+            --warning: #ecc94b;
+            --danger: #e53e3e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --card-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            --highlight-bg: rgba(139, 197, 64, 0.15);
+            --icon-bg: rgba(0, 60, 136, 0.2);
+            --footer-bg: var(--bg-header);
+            --footer-text: var(--text-secondary);
+            --toggle-icon: '\f185'; /* sun */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(13, 60, 136, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 197, 64, 0.1) 0%, transparent 20%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-primary);
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 0;
+            transition: var(--transition);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        .company-header {
+            background: var(--bg-header);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            border-bottom: 3px solid var(--primary-green);
+            transition: var(--transition);
+        }
+        
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-container img {
+            height: 50px;
+            filter: brightness(0.9);
+            transition: var(--transition);
+        }
+        
+        .company-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+        }
+        
+        .company-tagline {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            transition: var(--transition);
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .contact-info div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .contact-info i {
+            color: var(--primary-green);
+        }
+        
+        /* Breadcrumb Navigation */
+        .breadcrumb {
+            padding: 15px 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--primary-green);
+        }
+        
+        .breadcrumb span {
+            color: var(--text-muted);
+        }
+        
+        .breadcrumb .separator {
+            margin: 0 8px;
+            color: var(--text-muted);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px 0 40px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-green);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        
+        .highlight-box {
+            background: var(--highlight-bg);
+            border-left: 4px solid var(--primary-green);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        
+        .highlight-box i {
+            color: var(--primary-green);
+            margin-right: 10px;
+        }
+        
+        /* Categories */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .category-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 280px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--card-border);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-green);
+        }
+        
+        .category-card.active {
+            border-color: var(--primary-green);
+            background: linear-gradient(to bottom, var(--bg-card), rgba(139, 197, 64, 0.05));
+        }
+        
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--icon-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            transition: var(--transition);
+        }
+        
+        .category-card:hover .category-icon {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .category-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            transition: var(--transition);
+        }
+        
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-blue);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            transition: var(--transition);
+        }
+        
+        /* Subcategories */
+        .subcategories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .subcategory-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+        
+        .subcategory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-green);
+        }
+        
+        .subcategory-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--icon-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            transition: var(--transition);
+        }
+        
+        .subcategory-card:hover .subcategory-icon {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .subcategory-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+        
+        .subcategory-description {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+        
+        /* Documents Container */
+        .documents-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+            border: 1px solid var(--card-border);
+            border-top: 4px solid var(--primary-blue);
+            transition: var(--transition);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--icon-bg);
+        }
+        
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--icon-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            transition: var(--transition);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            transition: var(--transition);
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        
+        .document-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            transition: var(--transition);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary-green);
+        }
+        
+        .document-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .document-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--icon-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            flex-shrink: 0;
+            margin-right: 15px;
+            transition: var(--transition);
+        }
+        
+        .excel-icon {
+            background: rgba(139, 197, 64, 0.1);
+            color: var(--primary-green);
+        }
+        
+        .document-info {
+            flex-grow: 1;
+        }
+        
+        .document-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+        
+        .document-meta {
+            display: flex;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: var(--transition);
+        }
+        
+        .document-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .document-meta i {
+            font-size: 0.9rem;
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--card-border);
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        
+        .btn-view {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-download {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0.9;
+        }
+        
+        .btn-view:hover {
+            background: #002a5c;
+        }
+        
+        .btn-download:hover {
+            background: #78ad38;
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--icon-bg);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* PDF Viewer */
+        .viewer-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .viewer-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .viewer-header {
+            padding: 15px 25px;
+            background: rgba(30, 30, 30, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .viewer-title {
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 500;
+            max-width: 70%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .close-viewer {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .close-viewer:hover {
+            transform: rotate(90deg);
+            background: #c53030;
+        }
+        
+        .viewer-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pdf-viewer {
+            width: 70%;
+            height: 85%;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 100, 255, 0.3);
+            zoom: 0.85;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 25px 0;
+            margin-top: 40px;
+            transition: var(--transition);
+        }
+        
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-logo img {
+            height: 40px;
+            filter: brightness(0.8);
+            transition: var(--transition);
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            text-align: right;
+            color: var(--footer-text);
+        }
+        
+        .footer-text p {
+            margin: 3px 0;
+        }
+        
+        /* Toggle Modo Oscuro/Luz */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle::before {
+            content: var(--toggle-icon);
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .pdf-viewer {
+                width: 80%;
+                height: 80%;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .documents-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            
+            .pdf-viewer {
+                width: 90%;
+                height: 75%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .categories {
+                gap: 20px;
+            }
+            
+            .category-card {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .logo-container {
+                justify-content: center;
+            }
+            
+            .footer-container {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .footer-text {
+                text-align: center;
+            }
+            
+            .pdf-viewer {
+                width: 95%;
+                height: 70%;
+            }
+            
+            .viewer-title {
+                max-width: 60%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .document-actions {
+                flex-direction: column;
+            }
+            
+            .pdf-viewer {
+                width: 98%;
+                height: 65%;
+            }
+            
+            .page-title::after {
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <header class="company-header">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="https://transfarma.cl/wp-content/uploads/2024/06/logo-transfarma-vec.png" alt="Transfarma Logo">
+                <div>
+                    <div class="company-name">TRANSFARMA</div>
+                    <div class="company-tagline">Logística farmacéutica</div>
+                </div>
+            </div>
+            <div class="contact-info">
+                <div><i class="fas fa-phone"></i> +56 2 1234 5678</div>
+                <div><i class="fas fa-envelope"></i> contacto@transfarma.cl</div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="breadcrumb" id="breadcrumb">
+            <a href="#" id="home-link"><i class="fas fa-home"></i> Inicio</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="page-header">
+                <h1 class="page-title" id="main-title">Sistema de Calificaciones</h1>
+                <p class="page-subtitle" id="main-subtitle">Seleccione una categoría para acceder a los documentos</p>
+            </div>
+            
+            <div class="categories" id="main-categories">
+                <div class="category-card" data-category="vehiculos">
+                    <div class="category-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3 class="category-title">Vehículos</h3>
+                    <p class="category-description">Documentos de calificación de vehículos refrigerados</p>
+                </div>
+                
+                <div class="category-card" data-category="contenedores">
+                    <div class="category-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <h3 class="category-title">Contenedores</h3>
+                    <p class="category-description">Documentos de calificación de contenedores isotérmicos</p>
+                </div>
+            </div>
+            
+            <div id="subcategories-container" style="display: none;">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 30px;" id="subcategory-title"></h2>
+                <div class="subcategories" id="subcategories"></div>
+            </div>
+
+            <div class="categories" id="stage-tabs-container" style="display: none; margin-bottom: -20px; justify-content: flex-start; padding-left: 20px;">
+                </div>
+            <div class="documents-container" id="documents-container" style="display: none;">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title" id="current-category">Documentos</h2>
+                        <p class="section-subtitle">Documentos disponibles para visualización y descarga</p>
+                    </div>
+                </div>
+                <div class="documents-grid" id="documents-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>Seleccione una categoría para ver los documentos disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="https://transfarma.cl/wp-content/uploads/2024/06/logo-transfarma-vec.png" alt="Transfarma Logo">
+            </div>
+            <div class="footer-text">
+                <p>Sistema de Gestión Documental Calificaciones &copy; 2025 | Lucas Miralles Bahamonde</p>
+                <p>Av. Américo Vespucio 1385, Santiago, Chile</p>
+            </div>
+        </div>
+    </footer>
+    
+    <div class="viewer-container" id="pdf-viewer-container">
+        <div class="viewer-header">
+            <div class="viewer-title" id="viewer-title">Documento.pdf</div>
+            <button class="close-viewer" id="close-viewer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="viewer-content">
+            <iframe class="pdf-viewer" id="pdf-viewer" src=""></iframe>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> Descarga iniciada
+    </div>
+    
+    <div class="theme-toggle" id="theme-toggle"></div>
+    
+    <script>
+        // ==================================================
+        // ESTRUCTURA DE DATOS
+        // ==================================================
+        const documentsStructure = {
+            // ==================== VEHÍCULOS ====================
+            vehiculos: {
+                title: "Vehículos",
+                description: "Documentos de calificación de vehículos refrigerados",
+                subcategories: {
+                    // --- NUEVA PATENTE THTX-72 ---
+                    patenteTHTX72: {
+                        title: "Patente THTX-72",
+                        description: "Documentos para vehículo con patente THTX-72",
+                        subcategories: {
+                            verano: {
+                                title: "Calificación de Verano",
+                                description: "Documentos de calificación de verano",
+                                stages: {
+                                    iq: { // IQ para vehículos
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para verano",
+                                        documents: [
+                                            // Reemplaza 'ID_DEL_ARCHIVO_X' con los IDs reales
+                                            { id: 'ID_DEL_ARCHIVO_1', name: '1. INFORME FINAL IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_2', name: '2. PROTOCOLO IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_3', name: '3. ANEXO 1 IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_4', name: '4. ANEXO 2 IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_5', name: '5. ANEXO 3 IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_6', name: '6. ANEXO 4 IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_7', name: '7. ANEXO 5 IQ', type: 'pdf', size: '?', date: '' },
+                                            { id: 'ID_DEL_ARCHIVO_8', name: '8. ANEXO 6 IQ', type: 'pdf', size: '?', date: '' }
+                                        ]
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            },
+                            invierno: {
+                                title: "Calificación de Invierno",
+                                description: "Documentos de calificación de invierno",
+                                stages: {
+                                    iq: {
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    patente1: {
+                        title: "Patente ABC123",
+                        description: "Documentos para vehículo con patente ABC123",
+                        subcategories: {
+                            verano: {
+                                title: "Calificación de Verano",
+                                description: "Documentos de calificación de verano",
+                                stages: {
+                                    iq: { // IQ para vehículos
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            },
+                            invierno: {
+                                title: "Calificación de Invierno",
+                                description: "Documentos de calificación de invierno",
+                                stages: {
+                                    iq: {
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    patente2: {
+                        title: "Patente DEF456",
+                        description: "Documentos para vehículo con patente DEF456",
+                        subcategories: {
+                            verano: {
+                                title: "Calificación de Verano",
+                                description: "Documentos de calificación de verano",
+                                stages: {
+                                    iq: { // IQ para vehículos
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            },
+                            invierno: {
+                                title: "Calificación de Invierno",
+                                description: "Documentos de calificación de invierno",
+                                stages: {
+                                    iq: {
+                                        title: "Calificación de Instalación (IQ)",
+                                        description: "Documentos IQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            // ==================== CONTENEDORES ====================
+            contenedores: {
+                title: "Contenedores",
+                description: "Documentos de calificación de contenedores isotérmicos",
+                subcategories: {
+                    size50: {
+                        title: "Contenedores 50L (Pasivo)",
+                        description: "Documentos para contenedores de 50 litros",
+                        subcategories: {
+                            verano: {
+                                title: "Calificación de Verano",
+                                description: "Documentos de calificación de verano",
+                                stages: {
+                                    dq: { // DQ para pasivos
+                                        title: "Calificación de Diseño (DQ)",
+                                        description: "Documentos DQ para verano",
+                                        documents: [
+                                            { id: '1_od9hL81fPGa0FM3kLIsq610AjuvDVHr', name: 'INFORME FINAL DQ', type: 'pdf', size: '3 MB', date: '' },
+                                            { id: '1dwxsjsuGGsjIbUq1jlkM_qXCvX5Z0s0d', name: 'PROTOCOLO DQ', type: 'pdf', size: '3.6 MB', date: '' },
+                                            { id: '1B7owyxFn37s_zWHtz5kCGtjftlVawOo1', name: 'ANEXO 1 DQ', type: 'pdf', size: '5.7 MB', date: '' },
+                                            { id: '1baoVnZwpi2VXrY-VqPaYQosi8MNWiBDu', name: 'ANEXO 2 DQ', type: 'pdf', size: '3.5 MB', date: '' },
+                                            { id: '1ygQqx--Du4qGjAIFh05o_pUHqxaGn2Ha', name: 'ANEXO 3 DQ', type: 'pdf', size: '842 kB', date: '' },
+                                            { id: '1y7CR-jPHhUvUbInM3EEQ0IaRI0x8Z_nN', name: 'ANEXO 4 DQ', type: 'pdf', size: '1.3 MB', date: '' },
+                                            { id: '1JRsSZrrUtBBp5oO9p0u60ymodhf0xIub', name: 'ANEXO DESV DQ', type: 'pdf', size: '3.1 MB', date: '' }
+                                        ]
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para verano",
+                                        documents: [
+                                            { id: '1bMoPGZVSzepAlix49vOZ-QaVh5t9g9DQ', name: 'INFORME FINAL OQ', type: 'pdf', size: '2.2 MB', date: '' },
+                                            { id: '1tAcbsZXcR7tZT4drMDnOQukyTU_ad0Il', name: 'PROTOCOLO OQ', type: 'pdf', size: '4 MB', date: '' },
+                                            { id: '1j4YQ8ppIvOaaWsBeqL9ZxvWOqiKFN5vG', name: 'ANEXO 1 OQ', type: 'pdf', size: '678 kB', date: '' },
+                                            { id: '1WeX4RzxEqCKlNTpOZiFZUUsdTT4BAfof', name: 'ANEXO 2 OQ', type: 'pdf', size: '3.6 MB', date: '' },
+                                            { id: '12LZhk-oUOxJyDBAfte8xaJ1FbRxtq9Z7', name: 'ANEXO 3 OQ', type: 'pdf', size: '1.7 MB', date: '' },
+                                            { id: '1olFmbEW6zk1dss4hZ0u9ONhLjQXdDFbo', name: 'ANEXO 4 OQ', type: 'pdf', size: '1.7 MB', date: '' },
+                                            { id: '11jKp3C_K6hkfCZhhi1q7VOWJBuM0Ie6K', name: 'ANEXO 5 OQ', type: 'pdf', size: '1.7 MB', date: '' },
+                                            { id: '1kfRsBhlJfr0BnmiLk07XsOF6U7Tyhs-a', name: 'ANEXO 6 OQ', type: 'pdf', size: '1.7 MB', date: '' },
+                                            { id: '16qVc_5gIkMYaZKoKD3Gf7bNkozq2VqKK', name: 'ANEXO 7 OQ', type: 'pdf', size: '906 kB', date: '' },
+                                            { id: '1MXHFaJeJaI-qqMaQo47qszem-kYrQrMS', name: 'MKT Perfil cálido, carga mínima', type: 'xlsm', size: '379 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1MXHFaJeJaI-qqMaQo47qszem-kYrQrMS/edit?gid=706995565#gid=706995565', date: '' },
+                                            { id: '1qfXCTEoWDT6epDk7pp0-jcd7o6MXvNLN', name: 'MKT Perfil frío, carga mínima', type: 'xlsm', size: '367 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1qfXCTEoWDT6epDk7pp0-jcd7o6MXvNLN/edit?gid=1523318342#gid=1523318342', date: '' },
+                                            { id: '1AIcshtEYsCsu82c14G8Fj3l0OincBXwY', name: 'MKT Perfil cálido, carga máxima', type: 'xlsm', size: '373 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1AIcshtEYsCsu82c14G8Fj3l0OincBXwY/edit?gid=409252146#gid=409252146', date: '' },
+                                            { id: '1t54Lgy-xSwkgiDTczDOWHjDFUWkoeMfy', name: 'MKT Perfil frío, carga máxima', type: 'xlsm', size: '355 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1t54Lgy-xSwkgiDTczDOWHjDFUWkoeMfy/edit?gid=641922648#gid=641922648', date: '' }
+                                        ]
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para verano",
+                                        documents: [
+                                            { id: '1bz2QpJTfAIpM97vCCElxE_KK-1OAN5U4', name: 'INFORME FINAL PQ', type: 'pdf', size: '1.9 MB', date: '' },
+                                            { id: '15XHbUBAqgQlVN8-hYzmjdwQ4hSBF9stM', name: 'PROTOCOLO PQ', type: 'pdf', size: '6.6 MB', date: '' },
+                                            { id: '1-2aw6Mj7cjm9DSDNR85jIL1VPZIhmscQ', name: 'ANEXO 1 PQ', type: 'pdf', size: '3.5 MB', date: '' },
+                                            { id: '1uvNac5Eo7XzZjr0i9A-dHmt6yHa7dNc9', name: 'ANEXO 2 PQ', type: 'pdf', size: '1.9 MB', date: '' },
+                                            { id: '1zIFG6D9d-oCp8VrBbWAaBbk9_kOUM5Y3', name: 'ANEXO 3 PQ', type: 'pdf', size: '1.6 MB', date: '' },
+                                            { id: '1aNoo63ri9yprcLNiL3GC6HYsJoRwYADj', name: 'ANEXO 4 PQ', type: 'pdf', size: '2 MB', date: '' },
+                                            { id: '1JqoyGOmwSem_fihJvhz6TSjJhsNqSOJV', name: 'ANEXO 5 PQ', type: 'pdf', size: '1.7 MB', date: '' },
+                                            { id: '1NRQbVUp0qAoiSLHzLfeyCq1mt3Ikc5LH', name: 'ANEXO 6 PQ', type: 'pdf', size: '1.6 MB', date: '' },
+                                            { id: '1-2verlIfLG8MmXo9tMPkPrhL5Uq8-OV7', name: 'ANEXO 7 PQ', type: 'pdf', size: '2.5 MB', date: '' },
+                                            { id: '1vVSuAY0eMR8RLhhLFAOs6lPxHmNkzr11', name: 'ANEXO DESV PQ', type: 'pdf', size: '383 kB', date: '' },
+                                            { id: '1VnV8jq5b4zq2f4g8h7j3k9l2m1n5b6v7', name: 'MKT CPO, carga mínima', type: 'xlsm', size: '409 kB', previewLink: 'https://docs.google.com/spreadsheets/d/13I1Z-3alFLXdumlR0avyOHOYpeOnzev5/edit?gid=265015207#gid=265015207', date: '' },
+                                            { id: '1rDR45SvGwjZ8LXmlRp8_NTBthNcdmamV', name: 'MKT PMC, carga mínima', type: 'xlsm', size: '332 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1rDR45SvGwjZ8LXmlRp8_NTBthNcdmamV/edit?gid=1972848747#gid=1972848747', date: '' },
+                                            { id: '1KlqnGHL_zq7IvaOlr-JvBnQQbAr5ujwt', name: 'MKT CPO, carga máxima', type: 'xlsm', size: '397 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1KlqnGHL_zq7IvaOlr-JvBnQQbAr5ujwt/edit?gid=295043172#gid=295043172', date: '' },
+                                            { id: '1ygNzzjI6xEmazGKCj8no7j61zFaXQEo8', name: 'MKT PMC, carga máxima', type: 'xlsm', size: '373 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1ygNzzjI6xEmazGKCj8no7j61zFaXQEo8/edit?gid=731061774#gid=731061774', date: '' },
+                                            { id: '17vVo7eaF9XXU2gHC9iVAjqGXG_Mv3vlL', name: 'DESV MKT PMC, carga mínima', type: 'xlsm', size: '441 kB', previewLink: 'https://docs.google.com/spreadsheets/d/17vVo7eaF9XXU2gHC9iVAjqGXG_Mv3vlL/edit?gid=1702508883#gid=1702508883', date: '' },
+                                            { id: '1i9-NAIDp2mV6MXnXl5MfHWdOvnojv9DX', name: 'ANALISIS TEMP PMC', type: 'xlsm', size: '134 kB', previewLink: 'https://docs.google.com/spreadsheets/d/1i9-NAIDp2mV6MXnXl5MfHWdOvnojv9DX/edit?gid=326442532#gid=326442532', date: '' }
+                                        ]
+                                    }
+                                }
+                            },
+                            invierno: {
+                                title: "Calificación de Invierno",
+                                description: "Documentos de calificación de invierno",
+                                stages: {
+                                    dq: {
+                                        title: "Calificación de Diseño (DQ)",
+                                        description: "Documentos DQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    size100: {
+                        title: "Contenedores 100L (Pasivo)",
+                        description: "Documentos para contenedores de 100 litros",
+                        subcategories: {
+                            verano: {
+                                title: "Calificación de Verano",
+                                description: "Documentos de calificación de verano",
+                                stages: {
+                                    dq: { // DQ para pasivos
+                                        title: "Calificación de Diseño (DQ)",
+                                        description: "Documentos DQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para verano",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            },
+                            invierno: {
+                                title: "Calificación de Invierno",
+                                description: "Documentos de calificación de invierno",
+                                stages: {
+                                    dq: {
+                                        title: "Calificación de Diseño (DQ)",
+                                        description: "Documentos DQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    oq: {
+                                        title: "Calificación de Operación (OQ)",
+                                        description: "Documentos OQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    },
+                                    pq: {
+                                        title: "Calificación de Desempeño (PQ)",
+                                        description: "Documentos PQ para invierno",
+                                        documents: [] // Vacío por ahora
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    size750: {
+                        title: "Contenedores 750L (Activo)",
+                        description: "Documentos para contenedores de 750 litros",
+                        subcategories: {
+                            rango15a25: {
+                                title: "15°C a 25°C",
+                                description: "Rango de 15°C a 25°C",
+                                subcategories: {
+                                    verano: {
+                                        title: "Calificación de Verano",
+                                        description: "Documentos de calificación de verano",
+                                        stages: {
+                                            iq: { // IQ para activos
+                                                title: "Calificación de Instalación (IQ)",
+                                                description: "Documentos IQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            oq: {
+                                                title: "Calificación de Operación (OQ)",
+                                                description: "Documentos OQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            pq: {
+                                                title: "Calificación de Desempeño (PQ)",
+                                                description: "Documentos PQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            }
+                                        }
+                                    },
+                                    invierno: {
+                                        title: "Calificación de Invierno",
+                                        description: "Documentos de calificación de invierno",
+                                        stages: {
+                                            iq: {
+                                                title: "Calificación de Instalación (IQ)",
+                                                description: "Documentos IQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            oq: {
+                                                title: "Calificación de Operación (OQ)",
+                                                description: "Documentos OQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            pq: {
+                                                title: "Calificación de Desempeño (PQ)",
+                                                description: "Documentos PQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            rangoMenos25aMenos15: {
+                                title: "-25°C a -15°C",
+                                description: "Rango de -25°C a -15°C",
+                                subcategories: {
+                                    verano: {
+                                        title: "Calificación de Verano",
+                                        description: "Documentos de calificación de verano",
+                                        stages: {
+                                            iq: {
+                                                title: "Calificación de Instalación (IQ)",
+                                                description: "Documentos IQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            oq: {
+                                                title: "Calificación de Operación (OQ)",
+                                                description: "Documentos OQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            pq: {
+                                                title: "Calificación de Desempeño (PQ)",
+                                                description: "Documentos PQ para verano",
+                                                documents: [] // Vacío por ahora
+                                            }
+                                        }
+                                    },
+                                    invierno: {
+                                        title: "Calificación de Invierno",
+                                        description: "Documentos de calificación de invierno",
+                                        stages: {
+                                            iq: {
+                                                title: "Calificación de Instalación (IQ)",
+                                                description: "Documentos IQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            oq: {
+                                                title: "Calificación de Operación (OQ)",
+                                                description: "Documentos OQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            },
+                                            pq: {
+                                                title: "Calificación de Desempeño (PQ)",
+                                                description: "Documentos PQ para invierno",
+                                                documents: [] // Vacío por ahora
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // ==================================================
+        // REFERENCIAS DOM
+        // ==================================================
+        const mainCategories = document.getElementById('main-categories');
+        const subcategoriesContainer = document.getElementById('subcategories-container');
+        const subcategories = document.getElementById('subcategories');
+        const stageTabsContainer = document.getElementById('stage-tabs-container'); // <-- NUEVA REFERENCIA
+        const documentsContainer = document.getElementById('documents-container');
+        const documentsGrid = document.getElementById('documents-grid');
+        const currentCategory = document.getElementById('current-category');
+        const subcategoryTitle = document.getElementById('subcategory-title');
+        const mainTitle = document.getElementById('main-title');
+        const mainSubtitle = document.getElementById('main-subtitle');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const homeLink = document.getElementById('home-link');
+        const pdfViewerContainer = document.getElementById('pdf-viewer-container');
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const closeViewer = document.getElementById('close-viewer');
+        const viewerTitle = document.getElementById('viewer-title');
+        const notification = document.getElementById('notification');
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        // Estado de navegación
+        let navigationHistory = [];
+        
+        // ==================================================
+        // INICIALIZAR EVENTOS
+        // ==================================================
+        function initEvents() {
+            // Manejar clic en categorías principales
+            document.querySelectorAll('#main-categories .category-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const category = card.getAttribute('data-category');
+                    showSubcategories(category);
+                    addBreadcrumb(category, documentsStructure[category].title);
+                });
+            });
+            
+            // Botón de inicio
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showMainCategories();
+                clearBreadcrumb();
+            });
+            
+            // Cerrar visor PDF
+            closeViewer.addEventListener('click', () => {
+                pdfViewerContainer.classList.remove('active');
+                pdfViewer.src = '';
+            });
+            
+            // Cerrar visor al hacer clic fuera del contenido
+            pdfViewerContainer.addEventListener('click', (e) => {
+                if (e.target === pdfViewerContainer) {
+                    pdfViewerContainer.classList.remove('active');
+                    pdfViewer.src = '';
+                }
+            });
+            
+            // Cambiar tema
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                body.setAttribute('data-theme', newTheme);
+                
+                // Guardar preferencia en localStorage
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+        
+        // ==================================================
+        // FUNCIONES DE NAVEGACIÓN
+        // ==================================================
+        
+        // Mostrar categorías principales
+        function showMainCategories() {
+            mainCategories.style.display = 'flex';
+            subcategoriesContainer.style.display = 'none';
+            documentsContainer.style.display = 'none';
+            stageTabsContainer.style.display = 'none'; // <-- AÑADIDO
+            mainTitle.textContent = 'Sistema de Calificaciones';
+            mainSubtitle.textContent = 'Seleccione una categoría para acceder a los documentos';
+            navigationHistory = [];
+        }
+        
+        // Mostrar subcategorías
+        function showSubcategories(categoryKey) {
+            const category = documentsStructure[categoryKey];
+            mainCategories.style.display = 'none';
+            subcategoriesContainer.style.display = 'block';
+            documentsContainer.style.display = 'none';
+            stageTabsContainer.style.display = 'none'; // <-- AÑADIDO
+            
+            subcategoryTitle.textContent = category.title;
+            mainTitle.textContent = category.title;
+            mainSubtitle.textContent = category.description;
+            
+            // Limpiar subcategorías anteriores
+            subcategories.innerHTML = '';
+            
+            // Crear tarjetas de subcategorías
+            for (const key in category.subcategories) {
+                const subcategory = category.subcategories[key];
+                const card = document.createElement('div');
+                card.className = 'subcategory-card';
+                card.setAttribute('data-category', categoryKey);
+                card.setAttribute('data-subcategory', key);
+                
+                card.innerHTML = `
+                    <div class="subcategory-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="subcategory-title">${subcategory.title}</h3>
+                    <p class="subcategory-description">${subcategory.description}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    if (subcategory.subcategories) {
+                        // Tiene más subcategorías
+                        showNestedSubcategories(categoryKey, key, subcategory);
+                        addBreadcrumb(key, subcategory.title, categoryKey);
+                    } else {
+                        // Mostrar documentos directamente
+                        showDocuments(subcategory.documents, subcategory.title);
+                        addBreadcrumb(key, subcategory.title, categoryKey);
+                    }
+                });
+                
+                subcategories.appendChild(card);
+            }
+            
+            navigationHistory.push({ type: 'category', key: categoryKey });
+        }
+        
+        // Mostrar subcategorías anidadas
+        function showNestedSubcategories(categoryKey, subcategoryKey, subcategory) {
+            subcategoryTitle.textContent = subcategory.title;
+            mainTitle.textContent = subcategory.title;
+            mainSubtitle.textContent = subcategory.description;
+            
+            // Limpiar subcategorías anteriores
+            subcategories.innerHTML = '';
+            
+            // Crear tarjetas de subcategorías anidadas
+            for (const key in subcategory.subcategories) {
+                const nestedSubcategory = subcategory.subcategories[key];
+                const card = document.createElement('div');
+                card.className = 'subcategory-card';
+                card.setAttribute('data-category', categoryKey);
+                card.setAttribute('data-subcategory', subcategoryKey);
+                card.setAttribute('data-nestedsubcategory', key);
+                
+                card.innerHTML = `
+                    <div class="subcategory-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="subcategory-title">${nestedSubcategory.title}</h3>
+                    <p class="subcategory-description">${nestedSubcategory.description}</p>
+                `;
+                
+                // ===== INICIO: LÓGICA DE CLIC ACTUALIZADA =====
+                card.addEventListener('click', () => {
+                    // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
+                    if (nestedSubcategory.stages) {
+                        showStageTabsAndDocuments(nestedSubcategory.stages, nestedSubcategory.title, nestedSubcategory.description);
+                        addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
+                    } 
+                    // Si no, sigue la lógica de anidación
+                    else if (nestedSubcategory.subcategories) {
+                        showDeepNestedSubcategories(categoryKey, subcategoryKey, key, nestedSubcategory);
+                        addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
+                    } else {
+                        showDocuments(nestedSubcategory.documents, nestedSubcategory.title);
+                        addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
+                    }
+                });
+                // ===== FIN: LÓGICA DE CLIC ACTUALIZADA =====
+                
+                subcategories.appendChild(card);
+            }
+            
+            navigationHistory.push({ type: 'subcategory', categoryKey, key: subcategoryKey });
+        }
+        
+        // Mostrar subcategorías profundamente anidadas
+        function showDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, nestedSubcategory) {
+            subcategoryTitle.textContent = nestedSubcategory.title;
+            mainTitle.textContent = nestedSubcategory.title;
+            mainSubtitle.textContent = nestedSubcategory.description;
+            
+            // Limpiar subcategorías anteriores
+            subcategories.innerHTML = '';
+            
+            // Crear tarjetas de subcategorías profundamente anidadas
+            for (const key in nestedSubcategory.subcategories) {
+                const deepNestedSubcategory = nestedSubcategory.subcategories[key];
+                const card = document.createElement('div');
+                card.className = 'subcategory-card';
+                card.setAttribute('data-category', categoryKey);
+                card.setAttribute('data-subcategory', subcategoryKey);
+                card.setAttribute('data-nestedsubcategory', nestedKey);
+                card.setAttribute('data-deepnested', key);
+                
+                card.innerHTML = `
+                    <div class="subcategory-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="subcategory-title">${deepNestedSubcategory.title}</h3>
+                    <p class="subcategory-description">${deepNestedSubcategory.description}</p>
+                `;
+                
+                // ===== INICIO: LÓGICA DE CLIC ACTUALIZADA (para nivel 4) =====
+                card.addEventListener('click', () => {
+                    // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
+                    if (deepNestedSubcategory.stages) {
+                        showStageTabsAndDocuments(deepNestedSubcategory.stages, deepNestedSubcategory.title, deepNestedSubcategory.description);
+                        addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
+                    }
+                    // Si no, sigue la lógica de anidación
+                    else if (deepNestedSubcategory.subcategories) {
+                        showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, key, deepNestedSubcategory);
+                        addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
+                    } else {
+                        showDocuments(deepNestedSubcategory.documents, deepNestedSubcategory.title);
+                        addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
+                    }
+                });
+                // ===== FIN: LÓGICA DE CLIC ACTUALIZADA =====
+                
+                subcategories.appendChild(card);
+            }
+            
+            navigationHistory.push({ type: 'nestedSubcategory', categoryKey, subcategoryKey, key: nestedKey });
+        }
+        
+        // Mostrar subcategorías muy profundamente anidadas (nivel 5)
+        // Esta función ahora solo debería llevar a documentos, ya que 'stages' la reemplazó
+        function showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, deepNestedKey, deepNestedSubcategory) {
+            subcategoryTitle.textContent = deepNestedSubcategory.title;
+            mainTitle.textContent = deepNestedSubcategory.title;
+            mainSubtitle.textContent = deepNestedSubcategory.description;
+            
+            // Limpiar subcategorías anteriores
+            subcategories.innerHTML = '';
+            
+            // Crear tarjetas de subcategorías muy profundamente anidadas
+            for (const key in deepNestedSubcategory.subcategories) {
+                const veryDeepNestedSubcategory = deepNestedSubcategory.subcategories[key];
+                const card = document.createElement('div');
+                card.className = 'subcategory-card';
+                card.setAttribute('data-category', categoryKey);
+                card.setAttribute('data-subcategory', subcategoryKey);
+                card.setAttribute('data-nestedsubcategory', nestedKey);
+                card.setAttribute('data-deepnested', deepNestedKey);
+                card.setAttribute('data-verydeepnested', key);
+                
+                card.innerHTML = `
+                    <div class="subcategory-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="subcategory-title">${veryDeepNestedSubcategory.title}</h3>
+                    <p class="subcategory-description">${veryDeepNestedSubcategory.description}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    // Este es el último nivel, siempre muestra documentos
+                    showDocuments(veryDeepNestedSubcategory.documents, veryDeepNestedSubcategory.title);
+                    addBreadcrumb(key, veryDeepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey, deepNestedKey);
+                });
+                
+                subcategories.appendChild(card);
+            }
+            
+            navigationHistory.push({ type: 'deepNestedSubcategory', categoryKey, subcategoryKey, nestedKey, key: deepNestedKey });
+        }
+
+        // ===== INICIO: NUEVA FUNCIÓN PARA PESTAÑAS (IQ/OQ/PQ) =====
+        function showStageTabsAndDocuments(stages, title, description) {
+            mainCategories.style.display = 'none';
+            subcategoriesContainer.style.display = 'none';
+            stageTabsContainer.style.display = 'flex'; // Mostrar contenedor de pestañas
+            documentsContainer.style.display = 'block'; // Mostrar contenedor de documentos
+            
+            mainTitle.textContent = title;
+            mainSubtitle.textContent = description;
+            
+            stageTabsContainer.innerHTML = ''; // Limpiar pestañas anteriores
+            
+            // Crear las pestañas
+            Object.keys(stages).forEach((key, index) => {
+                const stage = stages[key];
+                const tabCard = document.createElement('div');
+                tabCard.className = 'category-card'; // Reusamos el estilo de tarjeta
+                tabCard.style.width = '240px'; // Hacemos las pestañas más pequeñas
+                tabCard.style.padding = '20px 15px';
+                tabCard.dataset.category = key;
+                
+                // Asignar íconos
+                let icon = 'fa-file-alt'; // Default
+                if (key === 'dq') icon = 'fa-drafting-compass';
+                if (key === 'iq') icon = 'fa-plug';
+                if (key === 'oq') icon = 'fa-cogs';
+                if (key === 'pq') icon = 'fa-chart-line';
+
+                tabCard.innerHTML = `
+                    <div class="category-badge">${key.toUpperCase()}</div>
+                    <div class="category-icon" style="width: 60px; height: 60px; font-size: 2rem;">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <h3 class="category-title" style="font-size: 1.2rem;">${stage.title}</h3>
+                `;
+                
+                // Lógica de clic para la pestaña
+                tabCard.addEventListener('click', () => {
+                    // Marcar pestaña activa
+                    stageTabsContainer.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+                    tabCard.classList.add('active');
+                    
+                    // Cargar los documentos de esta pestaña en la grid de abajo
+                    showDocuments(stage.documents, stage.title, true); // true = llamado desde pestaña
+                });
+                
+                stageTabsContainer.appendChild(tabCard);
+                
+                // Activar la primera pestaña por defecto
+                if (index === 0) {
+                    tabCard.click();
+                }
+            });
+        }
+        // ===== FIN: NUEVA FUNCIÓN PARA PESTAÑAS =====
+
+        
+        // ===== INICIO: FUNCIÓN showDocuments MODIFICADA =====
+        // Mostrar documentos
+        function showDocuments(docs, title, calledFromTab = false) {
+            
+            if (!calledFromTab) {
+                // Si NO se llama desde una pestaña, oculta todo lo demás
+                mainCategories.style.display = 'none';
+                subcategoriesContainer.style.display = 'none';
+                documentsContainer.style.display = 'block';
+                stageTabsContainer.style.display = 'none'; // Ocultar pestañas
+                
+                mainTitle.textContent = title;
+                mainSubtitle.textContent = 'Documentos disponibles para visualización y descarga';
+            }
+            
+            // Actualiza el título de la sección de documentos
+            currentCategory.textContent = title;
+            
+            let html = '';
+            
+            if (docs && docs.length > 0) {
+                docs.forEach(doc => {
+                    const icon = getIconForType(doc.type);
+                    const iconClass = doc.type === 'xlsm' ? 'excel-icon' : '';
+                    
+                    html += `
+                    <div class="document-card">
+                        <div class="document-header">
+                            <div class="document-icon ${iconClass}">
+                                ${icon}
+                            </div>
+                            <div class="document-info">
+                                <h3 class="document-title">${doc.name}</h3>
+                                <div class="document-meta">
+                                    <span><i class="fas fa-file"></i> ${doc.type.toUpperCase()}</span>
+                                    <span><i class="fas fa-database"></i> ${doc.size}</span>
+                                    ${doc.date ? `<span><i class="fas fa-calendar"></i> ${doc.date}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-view" onclick="viewDocument('${doc.id}', '${doc.name}', '${doc.type}', ${doc.previewLink ? `'${doc.previewLink}'` : 'null'})">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-download" onclick="downloadDocument('${doc.id}', '${doc.name}')">
+                                <i class="fas fa-download"></i> Descargar
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                });
+            } else {
+                html = '<div class="empty-state"><i class="fas fa-file-exclamation"></i><p>No se encontraron documentos en esta categoría.</p></div>';
+            }
+            
+            documentsGrid.innerHTML = html;
+            
+            if (!calledFromTab) {
+                // Solo añade al historial si no es un clic en una pestaña
+                navigationHistory.push({ type: 'documents', title });
+            }
+        }
+        // ===== FIN: FUNCIÓN showDocuments MODIFICADA =====
+        
+        // ==================================================
+        // FUNCIONES DE BREADCRUMB
+        // ==================================================
+        
+        // Añadir elemento al breadcrumb
+        function addBreadcrumb(key, title, categoryKey = null, subcategoryKey = null, nestedKey = null, deepNestedKey = null) {
+            const separator = document.createElement('span');
+            separator.className = 'separator';
+            separator.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = title;
+            
+            // Guardar información de navegación en el elemento
+            link.dataset.key = key;
+            if (categoryKey) link.dataset.categoryKey = categoryKey;
+            if (subcategoryKey) link.dataset.subcategoryKey = subcategoryKey;
+            if (nestedKey) link.dataset.nestedKey = nestedKey;
+            if (deepNestedKey) link.dataset.deepNestedKey = deepNestedKey;
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                if (categoryKey && subcategoryKey && nestedKey && deepNestedKey) {
+                    const category = documentsStructure[categoryKey];
+                    if (category && category.subcategories[subcategoryKey]) {
+                        const subcategory = category.subcategories[subcategoryKey];
+                        if (subcategory.subcategories[nestedKey]) {
+                            const nestedSubcategory = subcategory.subcategories[nestedKey];
+                            if (nestedSubcategory.subcategories[deepNestedKey]) {
+                                const deepNestedSubcategory = nestedSubcategory.subcategories[deepNestedKey];
+                                showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, deepNestedKey, deepNestedSubcategory);
+                            }
+                        }
+                    }
+                } else if (categoryKey && subcategoryKey && nestedKey) {
+                    const category = documentsStructure[categoryKey];
+                    if (category && category.subcategories[subcategoryKey]) {
+                        const subcategory = category.subcategories[subcategoryKey];
+                        if (subcategory.subcategories[nestedKey]) {
+                            const nestedSubcategory = subcategory.subcategories[nestedKey];
+                            showDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, nestedSubcategory);
+                        }
+                    }
+                } else if (categoryKey && subcategoryKey) {
+                    const category = documentsStructure[categoryKey];
+                    if (category && category.subcategories[subcategoryKey]) {
+                        const subcategory = category.subcategories[subcategoryKey];
+                        showNestedSubcategories(categoryKey, subcategoryKey, subcategory);
+                    }
+                } else if (categoryKey) {
+                    showSubcategories(categoryKey);
+                } else {
+                    showMainCategories();
+                }
+                
+                // ===== INICIO: CORRECCIÓN DEL BUG DEL BREADCRUMB =====
+                // Limpiar breadcrumb desde este punto onward
+                const index = Array.from(breadcrumb.children).indexOf(link);
+                // Debe ser 'index + 1' para no borrar el link actual
+                while (breadcrumb.children.length > index + 1) { 
+                    breadcrumb.removeChild(breadcrumb.lastChild);
+                }
+                // ===== FIN: CORRECCIÓN DEL BUG DEL BREADCRUMB =====
+            });
+            
+            breadcrumb.appendChild(separator);
+            breadcrumb.appendChild(link);
+        }
+        
+        // Limpiar breadcrumb
+        function clearBreadcrumb() {
+            // Mantener solo el enlace de inicio
+            while (breadcrumb.children.length > 1) {
+                breadcrumb.removeChild(breadcrumb.lastChild);
+            }
+        }
+        
+        // ==================================================
+        // FUNCIONES UTILITARIAS
+        // ==================================================
+        
+        // Obtener icono según tipo de documento
+        function getIconForType(type) {
+            const icons = {
+                'pdf': '<i class="far fa-file-pdf"></i>',
+                'docx': '<i class="far fa-file-word"></i>',
+                'xlsm': '<i class="far fa-file-excel"></i>',
+                'pptx': '<i class="far fa-file-powerpoint"></i>'
+            };
+            
+            return icons[type] || '<i class="far fa-file"></i>';
+        }
+        
+        // Visualizar documento
+        function viewDocument(id, name, type, previewLink = null) {
+            if (type === 'pdf') {
+                // URL de vista previa de Google Drive para PDFs con zoom al 85%
+                const url = `https://drive.google.com/file/d/${id}/preview#view=fitH&zoom=85`;
+                pdfViewer.src = url;
+                viewerTitle.textContent = name;
+                pdfViewerContainer.classList.add('active');
+            } else if (type === 'xlsm' && previewLink) {
+                // Abrir archivos Excel en nueva pestaña con el visor de Drive
+                window.open(previewLink, '_blank');
+            } else {
+                alert('La vista previa solo está disponible para documentos PDF. Por favor descargue el archivo para verlo.');
+            }
+        }
+        
+        // Descargar documento
+        function downloadDocument(id, name) {
+            // URL de descarga directa de Google Drive
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+            
+            // Crear enlace temporal para descarga
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', name);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Mostrar notificación
+            showNotification();
+        }
+        
+        // Mostrar notificación de descarga
+        function showNotification() {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Cargar preferencia de tema
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            body.setAttribute('data-theme', savedTheme);
+        }
+        
+        // ==================================================
+        // INICIALIZACIÓN
+        // ==================================================
+        window.onload = function() {
+            loadTheme();
+            initEvents();
+            showMainCategories();
+        };
+
+        // Hacer las funciones accesibles globalmente
+        window.viewDocument = viewDocument;
+        window.downloadDocument = downloadDocument;
+    </script>
+</body>
+</html>
