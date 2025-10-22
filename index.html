@@ -889,6 +889,7 @@
 
             <div class="categories" id="stage-tabs-container" style="display: none; margin-bottom: -20px;">
                 </div>
+            
             <div class="documents-container" id="documents-container" style="display: none;">
                 <div class="section-header">
                     <div class="section-icon">
@@ -1359,7 +1360,7 @@
         const mainCategories = document.getElementById('main-categories');
         const subcategoriesContainer = document.getElementById('subcategories-container');
         const subcategories = document.getElementById('subcategories');
-        const stageTabsContainer = document.getElementById('stage-tabs-container');
+        const stageTabsContainer = document.getElementById('stage-tabs-container'); 
         const documentsContainer = document.getElementById('documents-container');
         const documentsGrid = document.getElementById('documents-grid');
         const currentCategory = document.getElementById('current-category');
@@ -1433,7 +1434,7 @@
             mainCategories.style.display = 'flex';
             subcategoriesContainer.style.display = 'none';
             documentsContainer.style.display = 'none';
-            stageTabsContainer.style.display = 'none';
+            stageTabsContainer.style.display = 'none'; 
             mainTitle.textContent = 'Sistema de Calificaciones';
             mainSubtitle.textContent = 'Seleccione una categoría para acceder a los documentos';
             navigationHistory = [];
@@ -1445,16 +1446,14 @@
             mainCategories.style.display = 'none';
             subcategoriesContainer.style.display = 'block';
             documentsContainer.style.display = 'none';
-            stageTabsContainer.style.display = 'none';
+            stageTabsContainer.style.display = 'none'; 
             
             subcategoryTitle.textContent = category.title;
             mainTitle.textContent = category.title;
             mainSubtitle.textContent = category.description;
             
-            // Limpiar subcategorías anteriores
             subcategories.innerHTML = '';
             
-            // Crear tarjetas de subcategorías
             for (const key in category.subcategories) {
                 const subcategory = category.subcategories[key];
                 const card = document.createElement('div');
@@ -1472,11 +1471,9 @@
                 
                 card.addEventListener('click', () => {
                     if (subcategory.subcategories) {
-                        // Tiene más subcategorías
                         showNestedSubcategories(categoryKey, key, subcategory);
                         addBreadcrumb(key, subcategory.title, categoryKey);
-                    } else {
-                        // Mostrar documentos directamente
+                    } else { 
                         showDocuments(subcategory.documents, subcategory.title);
                         addBreadcrumb(key, subcategory.title, categoryKey);
                     }
@@ -1488,16 +1485,19 @@
             navigationHistory.push({ type: 'category', key: categoryKey });
         }
         
-        // Mostrar subcategorías anidadas
+        // Mostrar subcategorías anidadas (CORREGIDA)
         function showNestedSubcategories(categoryKey, subcategoryKey, subcategory) {
+            mainCategories.style.display = 'none';
+            subcategoriesContainer.style.display = 'block'; // Show this
+            stageTabsContainer.style.display = 'none';    // Hide stages
+            documentsContainer.style.display = 'none';    // Hide documents
+
             subcategoryTitle.textContent = subcategory.title;
             mainTitle.textContent = subcategory.title;
             mainSubtitle.textContent = subcategory.description;
             
-            // Limpiar subcategorías anteriores
             subcategories.innerHTML = '';
             
-            // Crear tarjetas de subcategorías anidadas
             for (const key in subcategory.subcategories) {
                 const nestedSubcategory = subcategory.subcategories[key];
                 const card = document.createElement('div');
@@ -1515,12 +1515,10 @@
                 `;
                 
                 card.addEventListener('click', () => {
-                    // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
                     if (nestedSubcategory.stages) {
                         showStageTabsAndDocuments(nestedSubcategory.stages, nestedSubcategory.title, nestedSubcategory.description);
                         addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
                     } 
-                    // Si no, sigue la lógica de anidación
                     else if (nestedSubcategory.subcategories) {
                         showDeepNestedSubcategories(categoryKey, subcategoryKey, key, nestedSubcategory);
                         addBreadcrumb(key, nestedSubcategory.title, categoryKey, subcategoryKey);
@@ -1536,16 +1534,19 @@
             navigationHistory.push({ type: 'subcategory', categoryKey, key: subcategoryKey });
         }
         
-        // Mostrar subcategorías profundamente anidadas
+        // Mostrar subcategorías profundamente anidadas (CORREGIDA)
         function showDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, nestedSubcategory) {
+            mainCategories.style.display = 'none';
+            subcategoriesContainer.style.display = 'block'; // Show this
+            stageTabsContainer.style.display = 'none';    // Hide stages
+            documentsContainer.style.display = 'none';    // Hide documents
+
             subcategoryTitle.textContent = nestedSubcategory.title;
             mainTitle.textContent = nestedSubcategory.title;
             mainSubtitle.textContent = nestedSubcategory.description;
             
-            // Limpiar subcategorías anteriores
             subcategories.innerHTML = '';
             
-            // Crear tarjetas de subcategorías profundamente anidadas
             for (const key in nestedSubcategory.subcategories) {
                 const deepNestedSubcategory = nestedSubcategory.subcategories[key];
                 const card = document.createElement('div');
@@ -1564,12 +1565,10 @@
                 `;
                 
                 card.addEventListener('click', () => {
-                    // Si tiene 'stages' (IQ/OQ/PQ), muestra la nueva interfaz de pestañas
                     if (deepNestedSubcategory.stages) {
                         showStageTabsAndDocuments(deepNestedSubcategory.stages, deepNestedSubcategory.title, deepNestedSubcategory.description);
                         addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
                     }
-                    // Si no, sigue la lógica de anidación
                     else if (deepNestedSubcategory.subcategories) {
                         showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, key, deepNestedSubcategory);
                         addBreadcrumb(key, deepNestedSubcategory.title, categoryKey, subcategoryKey, nestedKey);
@@ -1585,8 +1584,13 @@
             navigationHistory.push({ type: 'nestedSubcategory', categoryKey, subcategoryKey, key: nestedKey });
         }
         
-        // Mostrar subcategorías muy profundamente anidadas (nivel 5)
+        // Mostrar subcategorías muy profundamente anidadas (nivel 5) (CORREGIDA)
         function showVeryDeepNestedSubcategories(categoryKey, subcategoryKey, nestedKey, deepNestedKey, deepNestedSubcategory) {
+            mainCategories.style.display = 'none';
+            subcategoriesContainer.style.display = 'block'; // Show this
+            stageTabsContainer.style.display = 'none';    // Hide stages
+            documentsContainer.style.display = 'none';    // Hide documents
+
             subcategoryTitle.textContent = deepNestedSubcategory.title;
             mainTitle.textContent = deepNestedSubcategory.title;
             mainSubtitle.textContent = deepNestedSubcategory.description;
@@ -1735,7 +1739,7 @@
             
             if (!calledFromTab) {
                 // Solo añade al historial si no es un clic en una pestaña
-                navigationHistory.push({ type: 'documents', title });
+                //navigationHistory.push({ type: 'documents', title }); // Comentado temporalmente - podría no ser necesario con breadcrumb
             }
         }
         
@@ -1743,59 +1747,100 @@
         // FUNCIONES DE BREADCRUMB (CORREGIDAS)
         // ==================================================
 
-        // ===== INICIO: FUNCIÓN DE NAVEGACIÓN REFACTORIZADA (CORREGIDA) =====
+        // Función Refactorizada para Navegar con Breadcrumb
         function navigateBreadcrumb(linkElement) {
             const ds = linkElement.dataset;
             const key = ds.key;
             const catKey = ds.categoryKey;
             const subKey = ds.subcategoryKey;
             const nestKey = ds.nestedKey;
-            
-            // Logic to show the correct view, based on *which keys are present*
-            if (catKey && subKey && nestKey) { // Level 4 (e.g., Verano under 750L/Rango15-25)
-                const cat = documentsStructure[catKey].subcategories[subKey].subcategories[nestKey].subcategories[key];
-                if (cat.stages) {
-                    showStageTabsAndDocuments(cat.stages, cat.title, cat.description);
-                } else {
-                    showDocuments(cat.documents, cat.title);
-                }
-            } else if (catKey && subKey) { // Level 3 (e.g., Invierno under 50L, or Rango15-25 under 750L)
-                const cat = documentsStructure[catKey].subcategories[subKey].subcategories[key];
-                if (cat.stages) {
-                    showStageTabsAndDocuments(cat.stages, cat.title, cat.description);
-                } else {
-                    showDeepNestedSubcategories(catKey, subKey, key, cat);
-                }
-            } else if (catKey) { // Level 2 (e.g., 50L under Contenedores)
-                const cat = documentsStructure[catKey].subcategories[key];
-                showNestedSubcategories(catKey, key, cat);
-            } else if (key) { // Level 1 (e.g., Contenedores)
-                showSubcategories(key);
-            }
-            // Home (level 0) is handled by its own 'homeLink' listener, so no 'else' needed.
+            const deepKey = ds.deepnestedKey; // Necesitamos el nivel 4 también
 
-            // Clean up breadcrumb trail
+             // Encuentra el objeto de datos correspondiente al nivel del enlace clickeado
+            let targetObject;
+            let showFunction;
+            let args = [];
+
+            try { // Usamos try-catch por si la estructura no coincide exactamente
+                if (catKey && subKey && nestKey && deepKey) { // Nivel 5 (ej. un tipo específico de documento si hubiera)
+                   targetObject = documentsStructure[catKey].subcategories[subKey].subcategories[nestKey].subcategories[deepKey].subcategories[key];
+                   showFunction = showVeryDeepNestedSubcategories; // O showDocuments si es el último nivel
+                   args = [catKey, subKey, nestKey, deepKey, targetObject];
+                   // Ajustar si el último nivel son documentos
+                   if (!targetObject.subcategories) {
+                      showFunction = showDocuments;
+                      args = [targetObject.documents, targetObject.title];
+                   }
+                } else if (catKey && subKey && nestKey) { // Nivel 4 (ej. Verano/Invierno bajo 750L/Rango)
+                   targetObject = documentsStructure[catKey].subcategories[subKey].subcategories[nestKey].subcategories[key];
+                   if (targetObject.stages) {
+                      showFunction = showStageTabsAndDocuments;
+                      args = [targetObject.stages, targetObject.title, targetObject.description];
+                   } else { // Si tuviera más subniveles
+                       showFunction = showDeepNestedSubcategories;
+                       args = [catKey, subKey, nestKey, key, targetObject];
+                   }
+                } else if (catKey && subKey) { // Nivel 3 (ej. Verano/Invierno bajo 50L, o Rango bajo 750L)
+                   targetObject = documentsStructure[catKey].subcategories[subKey].subcategories[key];
+                   // Verificar si este nivel ya muestra Stages o más subcategorías
+                   if (targetObject.stages) { 
+                       showFunction = showStageTabsAndDocuments;
+                       args = [targetObject.stages, targetObject.title, targetObject.description];
+                   } else { // Muestra la lista de subcategorías (ej. Verano/Invierno)
+                       showFunction = showDeepNestedSubcategories; // Esta función muestra la lista del siguiente nivel
+                       args = [catKey, subKey, key, targetObject];
+                   }
+                } else if (catKey) { // Nivel 2 (ej. 50L bajo Contenedores)
+                   targetObject = documentsStructure[catKey].subcategories[key];
+                   showFunction = showNestedSubcategories; // Muestra la lista del siguiente nivel (Verano/Invierno, Rangos)
+                   args = [catKey, key, targetObject];
+                } else if (key) { // Nivel 1 (ej. Contenedores)
+                   targetObject = documentsStructure[key];
+                   showFunction = showSubcategories; // Muestra la lista del siguiente nivel (50L, 100L, 750L)
+                   args = [key];
+                } else {
+                    // Si no hay key, es el Home link (manejado por su propio listener)
+                    return; 
+                }
+
+                // Ejecuta la función de vista correspondiente
+                if (showFunction) {
+                    showFunction(...args);
+                } else {
+                    console.error("Función de vista no encontrada para el breadcrumb:", linkElement.dataset);
+                    showMainCategories(); // Volver al inicio como fallback
+                }
+
+            } catch (error) {
+                 console.error("Error navegando breadcrumb:", error, linkElement.dataset);
+                 showMainCategories(); // Volver al inicio si hay error en la estructura
+            }
+
+            // Limpia los elementos del breadcrumb DESPUÉS del que se hizo clic
             const clickedIndex = Array.from(breadcrumb.children).indexOf(linkElement);
+            // El índice en children es directo (0 para Home, 1 para sep, 2 para Nivel 1, etc.)
             while (breadcrumb.children.length > clickedIndex + 1) { 
                 breadcrumb.removeChild(breadcrumb.lastChild);
             }
         }
-        // ===== FIN: FUNCIÓN DE NAVEGACIÓN REFACTORIZADA =====
         
-        // Añadir elemento al breadcrumb (CORREGIDO)
+        // Añadir elemento al breadcrumb (CORREGIDO Y SIMPLIFICADO)
         function addBreadcrumb(key, title, categoryKey = null, subcategoryKey = null, nestedKey = null, deepNestedKey = null) {
             
-            // --- Esta lógica previene duplicados por doble-clic ---
-            let level = 1;
+             // --- Lógica anti-duplicados ---
+            let level = 1; // Nivel del item que se VA A AÑADIR
             if (categoryKey) level = 2;
             if (subcategoryKey) level = 3;
             if (nestedKey) level = 4;
             if (deepNestedKey) level = 5;
-            const targetIndex = level * 2; 
-            while (breadcrumb.children.length > (targetIndex - 1) && breadcrumb.children.length > 1) {
+            // El índice objetivo del NUEVO separador es level * 2 - 1
+            // El índice objetivo del NUEVO link es level * 2
+            const targetIndex = level * 2;
+            // Borra todo lo que esté en o después del índice donde debería ir el nuevo link
+            while (breadcrumb.children.length >= targetIndex && breadcrumb.children.length > 1) {
                  breadcrumb.removeChild(breadcrumb.lastChild);
             }
-            // --- Fin de la corrección de duplicados ---
+             // --- Fin anti-duplicados ---
 
             const separator = document.createElement('span');
             separator.className = 'separator';
@@ -1805,19 +1850,17 @@
             link.href = '#';
             link.textContent = title;
             
-            // Guardar información de navegación en el elemento
+            // Guardar info de navegación
             link.dataset.key = key;
             if (categoryKey) link.dataset.categoryKey = categoryKey;
             if (subcategoryKey) link.dataset.subcategoryKey = subcategoryKey;
             if (nestedKey) link.dataset.nestedKey = nestedKey;
-            if (deepNestedKey) link.dataset.deepNestedKey = deepNestedKey;
+            if (deepNestedKey) link.dataset.deepNestedKey = deepNestedKey; // Guardamos hasta nivel 4
             
-            // ===== INICIO: LISTENER CORREGIDO =====
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                navigateBreadcrumb(e.currentTarget); // Llamar a la nueva función de navegación
+                navigateBreadcrumb(e.currentTarget); // Llamar a la función refactorizada
             });
-            // ===== FIN: LISTENER CORREGIDO =====
             
             breadcrumb.appendChild(separator);
             breadcrumb.appendChild(link);
@@ -1825,7 +1868,6 @@
         
         // Limpiar breadcrumb
         function clearBreadcrumb() {
-            // Mantener solo el enlace de inicio
             while (breadcrumb.children.length > 1) {
                 breadcrumb.removeChild(breadcrumb.lastChild);
             }
@@ -1843,20 +1885,17 @@
                 'xlsm': '<i class="far fa-file-excel"></i>',
                 'pptx': '<i class="far fa-file-powerpoint"></i>'
             };
-            
             return icons[type] || '<i class="far fa-file"></i>';
         }
         
         // Visualizar documento
         function viewDocument(id, name, type, previewLink = null) {
             if (type === 'pdf') {
-                // URL de vista previa de Google Drive para PDFs con zoom al 85%
                 const url = `https://drive.google.com/file/d/${id}/preview#view=fitH&zoom=85`;
                 pdfViewer.src = url;
                 viewerTitle.textContent = name;
                 pdfViewerContainer.classList.add('active');
             } else if (type === 'xlsm' && previewLink) {
-                // Abrir archivos Excel en nueva pestaña con el visor de Drive
                 window.open(previewLink, '_blank');
             } else {
                 alert('La vista previa solo está disponible para documentos PDF. Por favor descargue el archivo para verlo.');
@@ -1865,18 +1904,13 @@
         
         // Descargar documento
         function downloadDocument(id, name) {
-            // URL de descarga directa de Google Drive
             const downloadUrl = `https://drive.google.com/uc?export=download&id=${id}`;
-            
-            // Crear enlace temporal para descarga
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.setAttribute('download', name);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // Mostrar notificación
             showNotification();
         }
         
